@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const mongoURI = "mongodb://localhost/finders-fee";
+const cors = require('cors')
 const connectOptions = {
     keepAlive: true,
     reconnectTries: Number.MAX_VALUE,
@@ -14,20 +15,8 @@ mongoose.connect(process.env.MONGODB_URI || mongoURI, connectOptions, (err, db) 
     console.log(`Connected to MongoDB`);
 })
 const app = express();
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Content-type,Accept,x-access-token,X-Key"
-    );
-    if (req.method == "OPTIONS") {
-        res.status(200).end();
-    } else {
-        next();
-    }
-});
 app.use(bodyParser.json());
+app.use(cors())
 // models
 require("./models/Items");
 require("./models/Users");

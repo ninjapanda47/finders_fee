@@ -1,18 +1,25 @@
 const mongoose = require('mongoose');
-const passport = require('passport');
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy;
 const router = require('express').Router();
 const auth = require('../auth');
 const Users = mongoose.model('Users');
 
 //POST new user route (optional, everyone has access)
-router.post('/', auth.optional, (req, res, next) => {
-    const { body: { user } } = req;
-    console.log('USER', user)
+router.post('/add', auth.optional, (req, res, next) => {
+    const user = req.body;
 
     if (!user.email) {
         return res.status(422).json({
             errors: {
                 email: 'is required',
+            },
+        });
+    }
+    if (!user.userName) {
+        return res.status(422).json({
+            errors: {
+                userName: 'is required',
             },
         });
     }
@@ -35,7 +42,7 @@ router.post('/', auth.optional, (req, res, next) => {
 
 //POST login route (optional, everyone has access)
 router.post('/login', auth.optional, (req, res, next) => {
-    const { body: { user } } = req;
+    const user = req.body;
 
     if (!user.email) {
         return res.status(422).json({
@@ -53,7 +60,7 @@ router.post('/login', auth.optional, (req, res, next) => {
         });
     }
 
-    return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
+    passport.authenticate('local', { session: false }, (err, passportUser, info) => {
         if (err) {
             return next(err);
         }
@@ -61,11 +68,17 @@ router.post('/login', auth.optional, (req, res, next) => {
         if (passportUser) {
             const user = passportUser;
             user.token = passportUser.generateJWT();
-
-            return res.json({ user: user.toAuthJSON() });
+            return res.status(200).send({
+                user: user.toAuthJSON(),
+                success: true,
+                message: 'User logged in successfully'
+            })
         }
 
-        return status(400).info;
+        return res.status(200).send({
+            success: false,
+            info
+        })
     })(req, res, next);
 });
 
