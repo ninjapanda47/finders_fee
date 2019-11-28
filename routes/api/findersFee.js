@@ -31,7 +31,7 @@ router.post("/addItem", async (req, res) => {
 })
 
 // Set item to found and input finderEmail
-router.put("/updateItemFound", async (req, res) => {
+router.post("/updateItemFound", async (req, res) => {
     const updateItem = await Items.findByIdAndUpdate({
         _id: req.body.id
     }, {
