@@ -29,6 +29,7 @@ const itemsSchema = new Schema({
     },
     finderEmail: {
         type: Array,
+        default: void 0
     },
     postDate: {
         type: Date,
